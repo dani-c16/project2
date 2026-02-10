@@ -1,0 +1,81 @@
+---
+title: "Chromosome overview"
+author: "Daniella Conradie"
+date: "2026-02-03"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## *Chromosome Overview*
+The chromosome sequences that will be analysed are only from the first 22 chromosomes, or autosomes, ignoring the sex chromosomes and any and all alt chromosomes. 
+
+```{r}
+library(GenomicRanges) # Ranged data library
+library(bsseq) # DNA methylation library
+library(BSgenome.Hsapiens.UCSC.hg38) # Genome sequence library
+library(TxDb.Hsapiens.UCSC.hg38.knownGene) # Gene annotation library
+library(Biostrings)
+BiocManager::install("TxDb.Hsapiens.UCSC.hg38.knownGene")
+BiocManager::install("qs")
+## Get the promoter ranges
+ my_promoters <- GenomicRanges::promoters(x = TxDb.Hsapiens.UCSC.hg38.knownGene)
+ seqlevels(my_promoters
+           )
+ autosomes <- paste0("chr", c(1:22))
+txdb <- TxDb.Hsapiens.UCSC.hg38.knownGene
+ seqnames(my_promoters) %in% autosomes 
+ pro <- my_promoters[seqnames(my_promoters) %in% autosomes ]
+gr <- pro
+gr1d <- my_promoters[seqnames(my_promoters)]
+gr_all <- gr[seqnames(gr) =="chr1"]
+dim(gr_all)
+unique(seqlevels(gr_all))
+chromosome_numbers <- paste0("chr",1:22)
+gr_all2 <- gr[seqnames(gr) %in% chromosome_numbers]
+print(gr_all2
+      )
+gr1 <- gr[seqnames(gr) =="chr1"]
+gr2 <- gr[seqnames(gr) =="chr2"]
+gr3 <- gr[seqnames(gr) =="chr3"]
+gr4 <- gr[seqnames(gr) =="chr4"]
+gr5 <- gr[seqnames(gr) =="chr5"]
+gr6 <- gr[seqnames(gr) =="chr6"]
+gr7 <- gr[seqnames(gr) =="chr7"]
+gr8 <- gr[seqnames(gr) =="chr8"]
+gr9 <-gr[seqnames(gr) =="chr9"]
+gr10 <- gr[seqnames(gr) =="chr10"]
+gr11 <- gr[seqnames(gr) =="chr11"]
+gr12 <- gr[seqnames(gr) =="chr12"]
+gr13 <- gr[seqnames(gr) =="chr13"]
+gr14 <- gr[seqnames(gr) =="chr14"]
+gr15 <- gr[seqnames(gr) =="chr15"]
+gr16 <- gr[seqnames(gr) =="chr16"]
+gr17 <- gr[seqnames(gr) =="chr17"]
+gr18 <-gr[seqnames(gr) =="chr18"]
+gr19 <- gr[seqnames(gr) =="chr19"]
+gr20 <- gr[seqnames(gr) =="chr20"]
+gr21 <-gr[seqnames(gr) =="chr21"]
+gr22 <- gr[seqnames(gr) =="chr22"]
+summary(gr2)
+print(gr2)
+
+mean(gr2)
+
+
+
+
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+  

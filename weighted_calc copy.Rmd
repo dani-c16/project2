@@ -1,0 +1,99 @@
+---
+title: "Weighted Calc"
+output: html_document
+date: "2026-02-06"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Weighted Coverage Calculation 
+
+This is the function used to calculate the weighted coverage of the promoters for the sample used, which was mapped to the reference genome hg38.
+
+```{r}
+
+BiocManager::install("GenomicRanges")
+BiocManager::install("Biostrings")
+BiocManager::install("scmeth")
+BiocManager::install("bsseq")
+BiocManager::install("TxDb.Hsapiens.UCSC.hg38.knownGene")
+
+ pro <- my_promoters[seqnames(my_promoters) %in% autosomes ]
+  my_promoters <- GenomicRanges::promoters(x = TxDb.Hsapiens.UCSC.hg38.knownGene)
+ seqlengths(BSgenome.Hsapiens.UCSC.hg38)
+ seqlevels(my_promoters)
+ gr <- pro
+ 
+ 
+calc_mC_cov_weighted <- function(RDS_path, gr){
+        
+     #   message(paste0("Reading ", RDS_path, " ", Sys.time()))
+        bs_obj <- readRDS("/Users/dani_c/Downloads/merged_control_CpG-bsseq.Rds")
+        
+        message("Calculating coverage...")
+        gr$Cov <- bsseq::getCoverage(BSseq = bs_obj, regions = gr, type = "Cov",
+                                     what = "perRegionTotal")
+        
+        message("Calculating M...")
+        gr$M <- bsseq::getCoverage(BSseq = bs_obj, regions = gr, type = "M",
+                                   what = "perRegionTotal")
+        
+        message("Calculating methylation percentage...")
+        gr$pc <- gr$M / gr$Cov
+        
+        return(gr)
+}
+
+geno <- seqlengths(BSgenome.Hsapiens.UCSC.hg38) 
+wholechromo3<- GRanges(seqnames = names(geno)
+                      , ranges = IRanges(start = 1, end = geno))
+
+calc_mC_cov_weighted <- function(RDS_path, wholechromo3){
+  
+  #   message(paste0("Reading ", RDS_path, " ", Sys.time()))
+  bs_obj <- readRDS("/Users/dani_c/Downloads/merged_control_CpG-bsseq.Rds")
+  
+  message("Calculating coverage...")
+  wholechromo3$Cov <- bsseq::getCoverage(BSseq = bs_obj, regions = wholechromo3, type = "Cov",
+                               what = "perRegionAverage")
+  
+  message("Calculating M...")
+  wholechromo3$M <- bsseq::getCoverage(BSseq = bs_obj, regions = wholechromo3, type = "M",
+                             what = "perRegionAverage")
+  
+  message("Calculating methylation percentage...")
+  wholechromo3$pc <- wholechromo3$M / wholechromo3$Cov
+  
+  return(wholechromo3)
+}
+wholechromo3[1:22]
+weightedchromo2 <- data.frame(
+  Chromosome = Rle(c("chr1", "chr2", "chr3", "chr4", "chr5", "chr6", "chr7", "chr8", "chr9", "chr10", "chr11", "chr12")),
+  IRanges = as.character(wholechromo3[1:12]),
+  M = wholechromo3$M[1:12],
+  Coverage = wholechromo3$Cov[1:12],
+  PC = wholechromo3$pc[1:12]
+)
+
+print(weightedchromo2)
+wholechromo3[1]
+wholechromo2[1]
+table_comp <- data.frame(Weighted = wholechromo3[1],
+                         Unweighted = wholechromo2[1])
+  
+  
+ print(table_comp) 
+  
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

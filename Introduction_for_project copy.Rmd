@@ -1,0 +1,22 @@
+---
+title: "Introduction"
+author: "Daniella Conradie"
+date: "2026-01-30"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# Determining the best method for calculating Average Methylation of CpG 
+## *Introduction*
+This project is using reference genome hg38, as well as a genome with over 100X coverage. There are three methods that will be compared against each other; weighted average, per base average and per read average. The aim of this project is to determine the optimal method to use for calculating average methylation for different levels of coverage, density and feature.
+
+```{r cars}
+summary(cars)
+```
+
+## *"Methods" of a kind*
+The average methylation of the genome used will be performed on a gradually down-sampled sequence, with 10 coverages: 10X, 20X, 30X, 40X, 50X, 60X, 70X, 80X, 90X and 100X, to determine whether the coverage level statistically affects the calculated methylation. Additionally, various features of the sequence, such as promoters, enhancers, genes, etc, will be calculated for each method, potentially at each of the 10 coverages. 
+
+

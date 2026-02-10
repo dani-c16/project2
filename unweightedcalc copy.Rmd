@@ -1,0 +1,110 @@
+---
+title: "perRegion"
+output: html_document
+date: "2026-02-06"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is the code for the unweighted calculation for the methylation, coverage and methylation percentage for the sample, without it having any specific genome feature being mapped to it. The first calculation is for perRegionTotal,
+
+```{r unweighted, cache=TRUE, warning=FALSE, }
+library(BSgenome.Hsapiens.UCSC.hg38)
+library(Biostrings)
+library(bsseq)
+library(GenomicRanges)
+
+hg38 <- BSgenome.Hsapiens.UCSC.hg38
+autosomes <- paste0("chr", c(1:22))
+# seqlengths(hg38) %in% autosomes
+ bs_obj <- readRDS("/Users/dani_c/Downloads/merged_control_CpG-bsseq.Rds")
+
+geno <- seqlengths(BSgenome.Hsapiens.UCSC.hg38) 
+wholechromo<- GRanges(seqnames = names(geno)
+                      , ranges = IRanges(start = 1, end = geno))
+
+
+#per region total calculation aka unweighted
+calc_mC_cov_unweighted <- function(RDS_path, wholechromo){
+  bs_obj <- readRDS("/Users/dani_c/Downloads/merged_control_CpG-bsseq.Rds")
+  
+
+  message("Calculating methylation percentage ...")
+ wholechromo$pc <- getMeth(bs_obj, regions = wholechromo, type = "raw", what = "perRegion" )
+ 
+ return(wholechromo)
+  }
+#wholechromo1[1:22]
+eh <- as.data.frame(wholechromo)
+eh[1:22,c( "seqnames","width", "merged") ]
+
+
+
+
+
+```
+
+
+
+This section is the calculation for perBase, which doesn't successfully return a methylation percentage value 100% of the time.
+```{r}
+
+
+#per base calculation
+calc_mC_cov_perbase <- function(RDS_path, wholechromo2){
+  bs_obj <- readRDS("/Users/dani_c/Downloads/merged_control_CpG-bsseq.Rds")
+  
+  message("Calculating M...")
+  wholechromo2$M <- bsseq::getCoverage(BSseq = bs_obj, regions = wholechromo2, type = "M", what = "perBase")
+  
+  message("Calculating methylation coverage...")
+  wholechromo2$Cov <- bsseq::getCoverage(BSseq = bs_obj, regions = wholechromo2, type = "Cov", what = "perBase")
+  
+  message("Calculating methylation percentage ...")
+ wholechromo2$pc <- wholechromo2$M/wholechromo2$Cov
+ 
+ return(wholechromo2)
+  }
+wholechromo2[1:12]
+
+
+unweightedchromo <- data.frame(
+  Chromosome = as.character(wholechromo[1:12]),
+  IRanges = as.character(wholechromo[1:12]),
+  M = Mchromo,
+  Coverage = covchromo,
+  PC = pcchromo
+)
+
+
+
+
+
+```
+
+
+
+```{r unweightedchromo, echo=FALSE}
+unweightedchromo[1:12, c( "Chromosome", "merged","merged.1","merged.2")]
+```
+
+
+This is the perBase coverage for the first 22 chromosomes of the sample.
+
+```{r wholechromo2, echo=FALSE}
+wholechromo2[1:22]
+#getMeth(BSseq = bs_obj,regions = wholechromo2, type = "raw", what = "perRegion")
+```
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

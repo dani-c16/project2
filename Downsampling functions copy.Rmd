@@ -1,0 +1,49 @@
+---
+title: "Downsampling function"
+author: "Daniella Conradie"
+date: "2026-01-30"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Downsampling 
+The original form of the data will be considered to be 100X coverage. From there, it will be d
+
+```{r}
+library(GenomicRanges)
+library(Biostrings)
+library(bsseq)
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+
+library(BiocManager)
+BiocManager::install("BSgenome.Hsapiens.UCSC.hg38")
+
+library(rtracklayer)
+library(BSgenome)
+
+require(TxDb.Hsapiens.UCSC.hg38)
+
+my_promoters <- GenomicRanges::promoters(txdb) #want to pull out the promoter regions mapped to reference genome hg38
+#want to define what full coverage is to use in the down-sampling function. Here i wnat to define full coverage as the the result of the CG read numbers for promoters in seq. May start with just the first 15 promoters.
+full_coverage <- function(Iran)
+ds<- function(full_coverage, fraction = 0.9){
+  s <- sample(full_coverage, 0.9)
+  return(s)
+}
+
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
