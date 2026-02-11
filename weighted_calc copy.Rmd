@@ -19,11 +19,12 @@ BiocManager::install("Biostrings")
 BiocManager::install("scmeth")
 BiocManager::install("bsseq")
 BiocManager::install("TxDb.Hsapiens.UCSC.hg38.knownGene")
-
- pro <- my_promoters[seqnames(my_promoters) %in% autosomes ]
+library(TxDb.Hsapiens.UCSC.hg38.knownGene)
+ autosomes <- paste0("chr", c(1:22))
   my_promoters <- GenomicRanges::promoters(x = TxDb.Hsapiens.UCSC.hg38.knownGene)
- seqlengths(BSgenome.Hsapiens.UCSC.hg38)
- seqlevels(my_promoters)
+  pro <- my_promoters[seqnames(my_promoters) %in% autosomes ]
+ # seqlengths(BSgenome.Hsapiens.UCSC.hg38)
+ # seqlevels(my_promoters)
  gr <- pro
  
  

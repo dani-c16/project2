@@ -1,0 +1,106 @@
+---
+title: "Different Genomic Features"
+output: html_document
+date: "2026-02-10"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Different Genomic Features and their M, Cov and pc values, weighted and unweighted for the sample (100X)
+
+### *Promoters*
+
+Firstly, promoters will be calculated using the built in gRanges function get
+
+```{r cars}
+library(GenomicRanges)
+library(bsseq)
+library(BSgenome.Hsapiens.UCSC.hg38) # Genome sequence library
+library(TxDb.Hsapiens.UCSC.hg38.knownGene) # Gene annotation library
+library(Biostrings)
+
+ my_promoters <- GenomicRanges::promoters(x = TxDb.Hsapiens.UCSC.hg38.knownGene)
+ autosomes <- paste0("chr", c(1:22))
+ pro <- my_promoters[seqnames(my_promoters) %in% autosomes]
+ pro_w<- calc_mC_cov_weighted(bs_obj, pro)
+pro_w_tab <- as.data.frame(pro_w)
+subset_pro_w <- pro_w_tab[ ,c("seqnames", "merged","merged.1", "merged.2")]
+colnames(subset_pro_w) <- c("Chromosome","Cov", "M", "pc")
+subset_pro_w
+
+
+
+
+```
+
+### *Transcription Factors*
+
+Transcription factors do not have a specific gRanges function to separate them out from the genome, so the UCSC genome browser was used to determine the ranges for hg38, the reference genome for the sample. Both transcription factors and transcription factors with chromatin access were collected.
+
+```{r }
+my_TF <- read.csv('/Users/dani_c/Downloads/tf.csv')
+gr_TF <- makeGRangesFromDataFrame(my_TF,
+                                  keep.extra.columns = TRUE,
+                                  seqnames.field = "seqnames",
+                                  start.field = "start",
+                                  end.field = "end")
+                                  
+gr_TF |> as.data.frame()
+
+TF_w <- calc_mC_cov_weighted(bs_obj, my_TF)
+
+
+
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+
+
+
+```{r }
+
+```
+
+
+
+
+
+
+
+```{r }
+
+```
+
+
+
+
+
+
+```{r }
+
+```
+
+
+
+
+
+
+
+```{r }
+
+```
+
+
+
+
+
+
+###
+
+```{r }
+
+```

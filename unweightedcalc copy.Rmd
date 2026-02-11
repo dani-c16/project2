@@ -39,8 +39,8 @@ calc_mC_cov_unweighted <- function(RDS_path, wholechromo){
  return(wholechromo)
   }
 #wholechromo1[1:22]
-eh <- as.data.frame(wholechromo)
-eh[1:22,c( "seqnames","width", "merged") ]
+# eh <- as.data.frame(wholechromo)
+# eh[1:22,c( "seqnames","width", "merged") ]
 
 
 
@@ -53,50 +53,50 @@ eh[1:22,c( "seqnames","width", "merged") ]
 This section is the calculation for perBase, which doesn't successfully return a methylation percentage value 100% of the time.
 ```{r}
 
-
-#per base calculation
-calc_mC_cov_perbase <- function(RDS_path, wholechromo2){
-  bs_obj <- readRDS("/Users/dani_c/Downloads/merged_control_CpG-bsseq.Rds")
-  
-  message("Calculating M...")
-  wholechromo2$M <- bsseq::getCoverage(BSseq = bs_obj, regions = wholechromo2, type = "M", what = "perBase")
-  
-  message("Calculating methylation coverage...")
-  wholechromo2$Cov <- bsseq::getCoverage(BSseq = bs_obj, regions = wholechromo2, type = "Cov", what = "perBase")
-  
-  message("Calculating methylation percentage ...")
- wholechromo2$pc <- wholechromo2$M/wholechromo2$Cov
- 
- return(wholechromo2)
-  }
-wholechromo2[1:12]
-
-
-unweightedchromo <- data.frame(
-  Chromosome = as.character(wholechromo[1:12]),
-  IRanges = as.character(wholechromo[1:12]),
-  M = Mchromo,
-  Coverage = covchromo,
-  PC = pcchromo
-)
-
-
-
-
+# 
+# #per base calculation
+# calc_mC_cov_perbase <- function(RDS_path, wholechromo2){
+#   bs_obj <- readRDS("/Users/dani_c/Downloads/merged_control_CpG-bsseq.Rds")
+#   
+#   message("Calculating M...")
+#   wholechromo2$M <- bsseq::getCoverage(BSseq = bs_obj, regions = wholechromo2, type = "M", what = "perBase")
+#   
+#   message("Calculating methylation coverage...")
+#   wholechromo2$Cov <- bsseq::getCoverage(BSseq = bs_obj, regions = wholechromo2, type = "Cov", what = "perBase")
+#   
+#   message("Calculating methylation percentage ...")
+#  wholechromo2$pc <- wholechromo2$M/wholechromo2$Cov
+#  
+#  return(wholechromo2)
+#   }
+# wholechromo2[1:12]
+# 
+# 
+# unweightedchromo <- data.frame(
+#   Chromosome = as.character(wholechromo[1:12]),
+#   IRanges = as.character(wholechromo[1:12]),
+#   M = Mchromo,
+#   Coverage = covchromo,
+#   PC = pcchromo
+# )
+# 
+# 
+# 
+# 
 
 ```
 
 
 
 ```{r unweightedchromo, echo=FALSE}
-unweightedchromo[1:12, c( "Chromosome", "merged","merged.1","merged.2")]
+# unweightedchromo[1:12, c( "Chromosome", "merged","merged.1","merged.2")]
 ```
 
 
 This is the perBase coverage for the first 22 chromosomes of the sample.
 
 ```{r wholechromo2, echo=FALSE}
-wholechromo2[1:22]
+# wholechromo2[1:22]
 #getMeth(BSseq = bs_obj,regions = wholechromo2, type = "raw", what = "perRegion")
 ```
 ## Including Plots
