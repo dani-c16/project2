@@ -1,0 +1,172 @@
+---
+title: "Calculations for genomic features"
+author: "Daniella Conradie"
+date: "2026-02-11"
+output: 
+html_document:
+code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Unweighted and Weighted M, Cov and Methylation Percentages for regulatory genome features
+
+This document has the weighted and unweighted calculations for all the regulatory genome features mapped by UCSC brpwser for hg38, chromosome 1. The two functions for the calculations are below. Each feature and its calculations have been converted into a data frame table, which are capped to show= the first 20 rows of each table, as some are as large as over 300,000 rows. The main comparison point of the tables are the potential differences between the pc values for weighted and unweighted calculations, either through directly comparing the two columns or by the calculated ∆ value.  The ∆ value was calculated using pc_unweighted - pc_weighted for each of the features. The order of subtraction is not based on any mathmatical reason, just the authors preference.
+
+```{r message=FALSE, warning=FALSE}
+
+library(GenomicRanges)
+library(bsseq)
+library(BSgenome.Hsapiens.UCSC.hg38) # Genome sequence library
+library(TxDb.Hsapiens.UCSC.hg38.knownGene) # Gene annotation library
+library(Biostrings)
+
+
+calc_mC_cov_weighted <- function(RDS_path, gr){
+        
+     #   message(paste0("Reading ", RDS_path, " ", Sys.time()))
+        bs_obj <- readRDS("/Users/dani_c/Downloads/merged_control_CpG-bsseq.Rds")
+        
+        message("Calculating coverage...")
+        gr$Cov <- bsseq::getCoverage(BSseq = bs_obj, regions = gr, type = "Cov",
+                                     what = "perRegionTotal")
+        
+        message("Calculating M...")
+        gr$M <- bsseq::getCoverage(BSseq = bs_obj, regions = gr, type = "M",
+                                   what = "perRegionTotal")
+        
+        message("Calculating methylation percentage...")
+        gr$pc <- gr$M / gr$Cov
+        
+        return(gr)
+}
+calc_mC_cov_unweighted <- function(RDS_path, wholechromo){
+  bs_obj <- readRDS("/Users/dani_c/Downloads/merged_control_CpG-bsseq.Rds")
+  
+
+  message("Calculating methylation percentage ...")
+ wholechromo$pc <- getMeth(bs_obj, regions = wholechromo, type = "raw", what = "perRegion" )
+ 
+ return(wholechromo)
+  }
+
+
+```
+
+
+
+
+### Promoters
+
+```{r message=FALSE, warning=FALSE}
+ autosomes <- paste0("chr", c(1:22))
+  my_promoters <- GenomicRanges::promoters(x = TxDb.Hsapiens.UCSC.hg38.knownGene)
+  pro <- my_promoters[seqnames(my_promoters) %in% autosomes ]
+  
+pro_w <- calc_mC_cov_weighted(bs_obj,pro)
+
+pro_uw <- calc_mC_cov_unweighted(bs_obj, pro)
+df_pro_w <- as.data.frame(pro_w)
+df_pro_uw <- as.data.frame(pro_uw)
+deltapro <- df_pro_uw$merged - df_pro_w$merged.2
+df_pro <- data.frame(df_pro_w$seqnames, df_pro_w$start,df_pro_w$end, df_pro_w$merged, df_pro_w$merged.1, df_pro_w$merged.2, df_pro_uw$merged, deltapro)
+colnames(df_pro) <- c("seqnames", "start","end","Coverage","M","pc-weighted","pc-unweighted","∆pc")
+df_pro[1:20,]
+
+```
+
+
+
+
+
+### Transcription Factors
+
+```{r message=FALSE, warning=FALSE}
+my_TF <- read.csv('/Users/dani_c/Downloads/tf.csv')
+TF_w <- calc_mC_cov_weighted(bs_obj, my_TF)
+TF_uw <- calc_mC_cov_unweighted(bs_obj, my_TF)
+df_TFw <- as.data.frame(TF_w)
+df_TFuw <- as.data.frame(TF_uw)
+deltaTF <- df_TFuw$pc - df_TFw$pc
+df_TF <- data.frame(df_TFw$seqnames, df_TFw$start,df_TFw$end, df_TFw$cCRE_class, df_TFw$Cov, df_TFw$M, df_TFw$pc, df_TFuw$pc, deltaTF)
+colnames(df_TF) <- c("seqnames", "start","end","Coverage","M","pc-weighted","pc-unweighted","∆pc")
+df_TF[1:20,]
+
+
+
+```
+
+
+
+
+
+### CTCF
+
+```{r message=FALSE, warning=FALSE}
+my_CTCF <- read.csv("/Users/dani_c/Downloads/CA-CTCF.csv")
+CTCF_w <- calc_mC_cov_weighted(bs_obj, my_CTCF)
+CTCF_uw <- calc_mC_cov_unweighted(bs_obj, my_CTCF)
+df_CTCF_w <- as.data.frame(CTCF_w)
+df_CTCF_uw <- as.data.frame(CTCF_uw)
+deltaCTCF <- df_CTCF_uw$pc-df_CTCF_w$pc
+df_CTCF_all <- data.frame(df_CTCF_w$seqnames,df_CTCF_w$start, df_CTCF_w$end, df_CTCF_w$cCRE_class, df_CTCF_w$Cov,df_CTCF_w$M,df_CTCF_w$pc, df_CTCF_uw$pc, deltaCTCF)
+colnames(df_CTCF_all) <- c("seqnames", "start","end","Class","Coverage","M","pc-weighted","pc-unweighted","∆pc")
+df_CTCF_all[1:20,]
+
+
+```
+
+
+
+
+### H3K4
+
+```{r message=FALSE, warning=FALSE}
+my_H3K4 <- read.csv("/Users/dani_c/Downloads/CA-H3K4me3.csv")
+H3K4_W <- calc_mC_cov_weighted(bs_obj, my_H3K4)
+H3K4_UW <- calc_mC_cov_unweighted(bs_obj, my_H3K4)
+df_H3K4_w <- as.data.frame(H3K4_W)
+df_H3K4_uw <- as.data.frame(H3K4_UW)
+delta_H3K4 <- df_H3K4_uw$pc - df_H3K4_w$pc
+df_H3K4 <- data.frame(df_H3K4_w$seqnames,df_H3K4_w$start,df_H3K4_w$end,df_H3K4_w$cCRE_class,df_H3K4_w$Cov,df_H3K4_w$M,df_H3K4_w$pc,df_H3K4_uw$pc, delta_H3K4)
+colnames(df_H3K4) <- c("seqnames", "start","end","Class","Coverage","M","pc-weighted","pc-unweighted","∆pc")
+df_H3K4[1:20,]
+
+
+```
+
+
+
+
+
+
+
+### CA (Chromatin Accessibility)
+This is the
+```{r message=FALSE, warning=FALSE}
+my_CA <- read.csv("/Users/dani_c/Downloads/CA.csv")
+CA_w<-calc_mC_cov_weighted(bs_obj, my_CA)
+CA_uw <- calc_mC_cov_unweighted(bs_obj, my_CA)
+df_CA_W <- as.data.frame(CA_w)
+df_CA_uw <- as.data.frame(CA_uw)
+delta_CA <- CA_uw$pc-CA_w$pc
+df_CA <- data.frame(df_CA_W$seqnames, df_CA_W$start,df_CA_W$end, df_CA_W$cCRE_class,df_CA_W$Cov, df_CA_W$M, df_CA_W$pc, df_CA_uw$pc, delta_CA)
+colnames(df_CA) <- c("seqnames", "start","end","Class","Coverage","M","pc-weighted","pc-unweighted","∆pc")
+df_CA[1:20,]
+
+
+
+```
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+# plot(df_CA[1:20000, c("pc-weighted" ,"pc-unweighted")])
+# plot(df_CA[1:200, c("coverage","∆pc")])
+# hist(df_CTCF_all[,"pc-weighted"])
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

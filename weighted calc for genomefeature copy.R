@@ -55,6 +55,9 @@ a <- getCoverage(BS1, regions = GR1, type = "Cov", what = "perRegionTotal")
 b <- getCoverage(BS1, regions = GR1, type = "M", what = "perRegionTotal")
 b/a
 d/c
+
+
+
 #unweighted
 getMeth(BS1, regions = GR1, type = "raw", what = "perRegion")
 
